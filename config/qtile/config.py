@@ -164,11 +164,8 @@ widget_defaults = dict(
 )
 extension_defaults = widget_defaults.copy()
 
-screens = [
-    Screen(
-        top=bar.Bar(
-            [
-                
+def init_widgets_list():
+    widgets_list = [
                 widget.GroupBox(
                     font = "Ubuntu Bold",
                     fontsize = 11,
@@ -296,17 +293,28 @@ screens = [
                     format = ": %H:%M",
                     background = colors[0],
                 ),
-           
-            ],
-            25,
-            background=colors[2],
-            # border_width=[2, 0, 2, 0],  # Draw top and bottom borders
-           # border_color=["ff00ff", "000000", "ff00ff", "000000"]  # Borders are magenta
-            
-       
-    ),
-)
-]
+
+            ]
+    return widgets_list
+
+widgets_list = init_widgets_list()
+
+def init_widgets_screen1():
+    widgets_screen1 = init_widgets_list()
+    return widgets_screen1
+
+def init_widgets_screen2():
+    widgets_screen2 = init_widgets_list()
+    return widgets_screen2
+
+widgets_screen1 = init_widgets_screen1()
+widgets_screen2 = init_widgets_screen2()
+
+
+def init_screens():
+    return [Screen(top=bar.Bar(widgets=init_widgets_screen1(), size=26, opacity=0.8, background = colors[2])),
+            Screen(top=bar.Bar(widgets=init_widgets_screen2(), size=26, opacity=0.8, background = colors[2]))]
+screens = init_screens()
 
 # Drag floating layouts.
 mouse = [
