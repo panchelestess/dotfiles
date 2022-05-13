@@ -37,7 +37,9 @@ import subprocess
 
 mod = "mod4"
 terminal = "alacritty" 
-browser = "firefox"
+browser = "brave -incognito"
+secondbrowser = "firefox"
+thirdbrowser = "chromium -incognito"
 
 keys = [
 
@@ -73,12 +75,19 @@ keys = [
         lazy.layout.toggle_split(),
         desc="Toggle between split and unsplit sides of stack",
     ),
+    #switch focus between monitors
+    Key([mod], "period",lazy.next_screen(),desc='Move focus to next monitor'),
+
 
     #lauch terminal
     Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
     
     #toogle layout
     Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
+    
+    #tootgle floating 
+    Key([mod, "shift"], "f", lazy.window.toggle_floating(),desc='toggle floating'),
+
 
     #kill windows
     Key([mod], "x", lazy.window.kill(), desc="Kill focused window"),
@@ -92,8 +101,21 @@ keys = [
     #app laucher
     Key([mod], "space", lazy.spawn("rofi -show run"), desc="Spawn a command using a prompt widget"),
 
+    #Brave
+    Key([mod], "b", lazy.spawn(browser), desc="lauch browser"),
+
     #firefox
-    Key([mod], "b", lazy.spawn("firefox"), desc="lauch firefox"),
+    Key([mod], "f", lazy.spawn(secondbrowser), desc="lauch browser"),
+
+    #Chromium
+    Key([mod], "d", lazy.spawn(thirdbrowser), desc="lauch browser"),
+
+    #discord
+    Key([mod], "m", lazy.spawn("discord"), desc="launch discord"),
+
+    #screenshot
+
+    Key([mod, "shift"], "s", lazy.spawn("flameshot full -p ~/screenshots"), desc="screenshots"),
 
 
 
@@ -101,9 +123,19 @@ keys = [
 
 
 #-------------GROUPS-------------------
-groups = [Group(i) for i in [
-     "DEV", "WEB", "DOC", "VM", "WORK", "CHAT", "MUS", "ANIM" 
-]]
+#groups = [Group(i) for i in [
+#     "1", "2", "3", "4", "5", "6", "7", "8"
+#]]
+
+groups = [Group("1", layout='columns'),
+          Group("2", layout='columns'),
+          Group("3", layout='columns'),
+          Group("4", layout='columns'),
+          Group("5", layout='columns'),
+          Group("6", layout='columns'),
+          Group("7", layout='floating'),
+          Group("8", layout='floating'),]
+
 
 for i, group in enumerate(groups):
     actual_key = str(i+1)
@@ -119,9 +151,9 @@ for i, group in enumerate(groups):
 
 #layouts themes
 layout_theme = {"border_width": 2,
-                "margin": 8,
+                "margin": 4,
                 "border_focus": "#373b41",
-                "border_normal": "#1d1f21" 
+                "border_normal": "1d1f21"
                }   
 
 
@@ -130,6 +162,7 @@ layouts = [
     layout.Max(**layout_theme),    
     layout.Bsp(**layout_theme),
     layout.MonadTall(**layout_theme),
+    layout.Floating(**layout_theme),
     # layout.Stack(num_stacks=2),
     # layout.Matrix(),
     # layout.MonadWide(),
@@ -160,7 +193,7 @@ widget_defaults = dict(
     font="Ubuntu Bold",
     foreground = colors[3],
     fontsize=12,
-    padding=3,
+    padding=7,
 )
 extension_defaults = widget_defaults.copy()
 
@@ -168,130 +201,103 @@ def init_widgets_list():
     widgets_list = [
                 widget.GroupBox(
                     font = "Ubuntu Bold",
-                    fontsize = 11,
+                    fontsize = 13,
+                    padding = 4,
                     disable_drag = True,
-                    borderwidth = 1,
+                    disable_scroll = True,
+                    borderwidth = 3,
                     active = colors[3],
-                    inactive = colors[4] ,
+                    inactive = colors[4],
                     rounded = False,
-                    highlight_color = colors[0],
+                    highlight_color = colors[1],
                     highlight_method = "line",
-                    this_current_screen_border = colors[4] , 
-                    this_screen_border = colors[0],
-                    other_current_screen_border = colors[2],
-                    other_screen_border = colors[3],
-                    block_highlight_text_color = colors[3],
+                    this_current_screen_border = colors[3],
+                    this_screen_border = colors[1],
+                    other_current_screen_border = colors[6],
+                    other_screen_border = colors[1],
                     foreground = colors[2],
-                    background = colors[0],
-               ),
-                
+                    background = colors[1],
+                    use_mouse_wheel = False,
+                ),
                 widget.TextBox(
                     text='\uE0B0',
-                    background=colors[2],
-                    foreground=colors[0],
+                    background=colors[0],
+                    foreground=colors[1],
                     padding=0,
                     fontsize=25,
                 ),
+
 
                 widget.WindowName(),
 
-                widget.Spacer(),
+                widget.Spacer(
+                ),
 
                 widget.Systray(
                     icon_size = 20,
-                    margin_y = 4,
                     padding = 10,
                 ),
+
+                widget.Sep(
+                    padding = 10,
+                    foreground = colors[0],
+                ),
+
                 widget.TextBox(
-                    text='\uE0B2',
-                    background=colors[2],
-                    foreground=colors[0],
-                    padding=0,
-                    fontsize=25,
+                    text = "[Layout = ",
+                    padding = 0,
+
                 ),
                 widget.CurrentLayout(
                     fontsize = 12,
                     font = "Ubuntu Bold",
-                    padding = 4,
+                    padding = 0,
                     margin_y = 6,
-                    background = colors[0],
+                ),
+                widget.TextBox(
+                    text = "]",
+                    padding = 0, 
+
                 ),
 
-                widget.TextBox(
-                    text='\uE0B2',
-                    background=colors[0],
-                    foreground=colors[2],
-                    padding=0,
-                    fontsize=25,
+                widget.Sep(
+                    padding = 8,    
+                    foreground = colors[0],
                 ),
 
                 widget.CheckUpdates(
                     distro = 'Arch',
-                    display_format = 'Updates: {updates}',
+                    display_format = '[Updates: {updates}]',
                     update_interval=1800,
-                    no_update_string='No updates',
+                    no_update_string='[Updates: no]',
                     colour_have_updates=colors[3],
                     colour_no_updates=colors[3],
-                ),
-                widget.TextBox(
-                    text='\uE0B2',
-                    background=colors[2],
-                    foreground=colors[0],
-                    padding=0,
-                    fontsize=25,
+                   
                 ),
 
                 widget.DF(
                     visible_on_warn=False,
-                    background = colors[0],
-                    format = ': {p} {uf}{m}|{s}{m}',
+                    format = '[: {p} {uf}{m}|{s}{m}]',
                 ),
 
-                widget.TextBox(
-                    text='\uE0B2',
-                    background=colors[0],
-                    foreground=colors[2],
-                    padding=0,
-                    fontsize=25,
-                ),
 
                 widget.CPU(
-                    format = ": {freq_current}GHz {load_percent}%",
+                    format = "[: {load_percent}%]",
                 ),
 
-                widget.TextBox(
-                    text='\uE0B2',
-                    background=colors[2],
-                    foreground=colors[0],
-                    padding=0,
-                    fontsize=25,
+                widget.ThermalSensor(
+                    fmt = "[: {}]",
+                    foreground = colors[3]
+
                 ),
+
                 widget.Memory(
                     measure_mem='M',
-                    format = ":{MemUsed: .0f}{mm}/{MemTotal: .0f}{mm}",
-                    background = colors[0],
+                    format = "[:{MemUsed: .0f}{mm}/{MemTotal: .0f}{mm}]",
                 ),
 
-                widget.TextBox(
-                    text='\uE0B2',
-                    background=colors[0],
-                    foreground=colors[2],
-                    padding=0,
-                    fontsize=25,
-                ),
-                widget.Volume(
-                    fmt = ": {}",
-                ),
-                widget.TextBox(
-                    text='\uE0B2',
-                    background=colors[2],
-                    foreground=colors[0],
-                    padding=0,
-                    fontsize=25,
-                ),
                 widget.Clock(
-                    format = ": %H:%M",
-                    background = colors[0],
+                    format = "[: %H:%M]"   ,
                 ),
 
             ]
@@ -305,6 +311,7 @@ def init_widgets_screen1():
 
 def init_widgets_screen2():
     widgets_screen2 = init_widgets_list()
+    del widgets_screen2[4]               
     return widgets_screen2
 
 widgets_screen1 = init_widgets_screen1()
@@ -312,8 +319,9 @@ widgets_screen2 = init_widgets_screen2()
 
 
 def init_screens():
-    return [Screen(top=bar.Bar(widgets=init_widgets_screen1(), size=26, opacity=0.8, background = colors[2])),
-            Screen(top=bar.Bar(widgets=init_widgets_screen2(), size=26, opacity=0.8, background = colors[2]))]
+    return [Screen(top=bar.Bar(widgets=init_widgets_screen1(), size=26, opacity=1, background = colors[0])),
+            Screen(top=bar.Bar(widgets=init_widgets_screen2(), size=26, opacity=1, background = colors[0]))
+]
 screens = init_screens()
 
 # Drag floating layouts.
@@ -326,7 +334,7 @@ mouse = [
 dgroups_key_binder = None
 dgroups_app_rules = []  # type: list
 follow_mouse_focus = True
-bring_front_click = False
+bring_front_click =  True 
 cursor_warp = False
 floating_layout = layout.Floating(
     float_rules=[
@@ -338,6 +346,7 @@ floating_layout = layout.Floating(
         Match(wm_class="ssh-askpass"),  # ssh-askpass
         Match(title="branchdialog"),  # gitk
         Match(title="pinentry"),  # GPG key password entry
+        Match(wm_class="alacritty")
     ]
 )
 auto_fullscreen = True
