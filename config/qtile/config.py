@@ -37,10 +37,8 @@ import subprocess
 
 mod = "mod4"
 terminal = "alacritty" 
-browser = "brave -incognito"
-secondbrowser = "firefox"
-thirdbrowser = "chromium -incognito"
-
+browser = "firefox"
+browser1 = "cd Downloads/tor-browser_en-US/ ;  ~/./Downloads/tor-browser_en-US/start-tor-browser.desktop"
 keys = [
 
     #focus on windows
@@ -100,22 +98,19 @@ keys = [
 
     #app laucher
     Key([mod], "space", lazy.spawn("rofi -show run"), desc="Spawn a command using a prompt widget"),
-
-    #Brave
+    
+    #firefox
     Key([mod], "b", lazy.spawn(browser), desc="lauch browser"),
 
-    #firefox
-    Key([mod], "f", lazy.spawn(secondbrowser), desc="lauch browser"),
-
-    #Chromium
-    Key([mod], "d", lazy.spawn(thirdbrowser), desc="lauch browser"),
+    #tor browser
+    Key([mod], "t", lazy.spawn("cd Downloads/tor-browser_en-US/ ;  ~/./Downloads/tor-browser_en-US/start-tor-browser.desktop"), desc="lauch browser"),
 
     #discord
     Key([mod], "m", lazy.spawn("discord"), desc="launch discord"),
 
     #screenshot
 
-    Key([mod, "shift"], "s", lazy.spawn("flameshot full -p ~/screenshots"), desc="screenshots"),
+    Key([mod, "shift"], "s", lazy.spawn("gscreenshot"), desc="screenshots"),
 
 
 
@@ -133,8 +128,8 @@ groups = [Group("1", layout='columns'),
           Group("4", layout='columns'),
           Group("5", layout='columns'),
           Group("6", layout='columns'),
-          Group("7", layout='floating'),
-          Group("8", layout='floating'),]
+          Group("7", layout='columns'),
+          Group("8", layout='columns'),]
 
 
 for i, group in enumerate(groups):
